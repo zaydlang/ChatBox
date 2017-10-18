@@ -5,6 +5,10 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.concurrent.*;
+import java.util.*;
+import java.net.*;
+import java.io.*;
 
 public class ChatboxInterface extends JFrame implements ActionListener {
    private final Font titleFont = new Font("Arial", Font.BOLD, 48);
@@ -13,9 +17,15 @@ public class ChatboxInterface extends JFrame implements ActionListener {
    private JTextArea chatHistory;
    private JTextField enterMessage;
    private JButton sendMessage;
-   
-  
-   public ChatboxInterface() throws Exception {
+   private PrintWriter out;
+
+   public ChatboxInterface(String ip, int port) throws Exception {
+      Socket       s = new Socket(ip, port);
+      InputStream  instream = s.getInputStream();
+      OutputStream outstream = s.getOutputStream();
+      Scanner      in = new Scanner(instream);
+                   out = new PrintWriter(outstream); 
+
       setSize(1300, 1100);
       setLayout(null);
       setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -46,21 +56,32 @@ public class ChatboxInterface extends JFrame implements ActionListener {
       add(sendMessage);
       
       this.getRootPane().setDefaultButton(sendMessage);
-
       
       setVisible(true);
-      
+
+      while (true) {
+         if (in.hasNext()) {
+             appendMessage(in.next());
+         }
+         
+         TimeUnit.SECONDS.sleep(1);
+      }      
    }
    
    public void actionPerformed(ActionEvent e) {
       String message = enterMessage.getText();
-      enterMessage.setText("");
-      String messageHistory = chatHistory.getText();
-      chatHistory.setText(messageHistory + "\n" + "Pranay: " +  message + "\n" + "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-      
+      appendMessage(message);
+      out.println(message);
+      out.flush();
    }
    
-   public static void main(String[] args) throws Exception{
-      new ChatboxInterface();
+   public void appendMessage(String message) {
+      enterMessage.setText("");
+      String messageHistory = chatHistory.getText();
+      chatHistory.setText(messageHistory + "\n" + "Pranay: " +  message + "\n");
+   }
+
+   public static void main(String[] args) throws Exception {
+      new ChatboxInterface("localhost", 34197);
    }
 }
