@@ -1,5 +1,5 @@
 //Pranay Sen
-//Cumstain
+//Zayd Qumsieh
 //Fall Project
 
 import javax.swing.*;
@@ -60,8 +60,10 @@ public class ChatboxInterface extends JFrame implements ActionListener {
       setVisible(true);
 
       while (true) {
-         if (in.hasNext()) {
-             appendMessage(in.next());
+         System.out.println(s.getInputStream().available());
+         if (s.getInputStream().available() != 0) {
+             String message = in.next();
+             appendMessage(message);
          }
          
          TimeUnit.SECONDS.sleep(1);
@@ -76,6 +78,8 @@ public class ChatboxInterface extends JFrame implements ActionListener {
    }
    
    public void appendMessage(String message) {
+      System.out.println("close");
+      System.out.println(message);
       enterMessage.setText("");
       String messageHistory = chatHistory.getText();
       chatHistory.setText(messageHistory + "\n" + "Pranay: " +  message + "\n");
