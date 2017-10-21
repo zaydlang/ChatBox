@@ -60,9 +60,8 @@ public class ChatboxInterface extends JFrame implements ActionListener {
       setVisible(true);
 
       while (true) {
-         System.out.println(s.getInputStream().available());
          if (s.getInputStream().available() != 0) {
-             String message = in.next();
+             String message = in.nextLine();
              appendMessage(message);
          }
          
@@ -72,20 +71,18 @@ public class ChatboxInterface extends JFrame implements ActionListener {
    
    public void actionPerformed(ActionEvent e) {
       String message = enterMessage.getText();
+      enterMessage.setText("");
       appendMessage(message);
       out.println(message);
       out.flush();
    }
    
    public void appendMessage(String message) {
-      System.out.println("close");
-      System.out.println(message);
-      enterMessage.setText("");
       String messageHistory = chatHistory.getText();
       chatHistory.setText(messageHistory + "\n" + "Pranay: " +  message + "\n");
    }
 
    public static void main(String[] args) throws Exception {
-      new ChatboxInterface("localhost", 34197);
+      new ChatboxInterface("10.88.11.215", 34197);
    }
 }
