@@ -70,7 +70,7 @@ public class ChatboxInterface extends JFrame implements ActionListener {
 
       listModel = new DefaultListModel();
       System.out.println("Chat Made");
-           /* 
+           
       this.name = name;
       s         = new Socket(ip, port);
       is  = s.getInputStream();
@@ -80,14 +80,14 @@ public class ChatboxInterface extends JFrame implements ActionListener {
       this.name = name;
 
       out.println("/join " + id);
-      out.flush();*/
+      out.flush();
    }
 
    public void actionPerformed(ActionEvent e) {
       String message = enterMessage.getText();
       appendMessage(name + ": " + message);
-      /*out.println(name + ": " + message);
-      out.flush();*/
+      out.println(name + ": " + message);
+      out.flush();
    }
 
    public void run() throws Exception {
