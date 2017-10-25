@@ -5,12 +5,23 @@ import javax.swing.*;
 
 import java.net.*;
 
+import java.io.*;
+
+import java.util.*;
+
 public class ConnectInterface extends JFrame implements ActionListener {
 
    private final Font font = new Font("Arial", Font.BOLD, 48);
-   private final int port = 12345;
+   private final int port = 34197;
    private JTextField ipField;
    private JTextField nameField;
+   
+   private InputStream  instream;
+   private OutputStream outstream;
+   private Scanner      in;
+   private PrintWriter  out;
+   private Socket       s;
+   private String[] arg;
    
    // Honestly don't know why this works or how it works but https://stackoverflow.com/questions/1028661/unhandled-exceptions-in-field-initializations
    /*static {
@@ -29,9 +40,11 @@ public class ConnectInterface extends JFrame implements ActionListener {
    public ConnectInterface() {
       setSize(1300, 550);
       setLayout(null); 
+      arg = new String[1];
+      arg[0] = "/gc 1";
       
-      JLabel title = new JLabel("Welcome to ChatBox!");
-      title.setBounds(400, 25, 900, 100);
+      JLabel title = new JLabel("Welcome to Odyssey Chat!");
+      title.setBounds(350, 25, 900, 100);
       title.setFont(font);
       add(title);
       
@@ -63,18 +76,14 @@ public class ConnectInterface extends JFrame implements ActionListener {
       
       setVisible(true);
    }
-
-   /**
-    * This overrided function paints the canvas given the
-    * arrays of points.
-    */
-   public void paintComponent (Graphics g) {
-   
-   }
    
    public void actionPerformed(ActionEvent e) {
       try {
-         System.out.println(connectIP());
+         //connectIP();
+         new ChatboxInterface(ipField.getText(), 34197, nameField.getText(), arg);
+         this.dispose();
+         System.out.println(s.isClosed());
+         System.out.println(s);
          //this.dispose();
       } catch (Exception ex) {
          JLabel label = new JLabel("Server Not Found");
@@ -84,10 +93,27 @@ public class ConnectInterface extends JFrame implements ActionListener {
       }
    }
    
-   public Socket connectIP() throws Exception {
+   public void connectIP() throws Exception {
       System.out.println(ipField.getText());
-      Socket succ = new Socket(ipField.getText(), port);
-      return succ;
+      try {
+         s = new Socket(ipField.getText(), port);
+         instream = s.getInputStream();
+         outstream = s.getOutputStream();
+         in = new Scanner(instream);
+         out = new PrintWriter(outstream); 
+         // Send command
+   
+         String command = nameField.getText();
+         System.out.println(command);
+         out.println(command);
+         out.flush();
+         //String response = in.nextLine();
+         
+         System.out.println(s.isClosed());
+       } catch (IOException e) {
+         e.printStackTrace();
+       }
+       System.out.println(s.isClosed());
    }
    
    // DELETE THIS LATER
