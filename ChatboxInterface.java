@@ -23,6 +23,9 @@ public class ChatboxInterface extends JFrame implements ActionListener {
    private InputStream is;
    private OutputStream os;
    private Scanner in;
+   private static JScrollPane scroll;
+   private static JList<String> messageHistory;
+   private static DefaultListModel listModel;
 
    public ChatboxInterface(String name, String ip, int port, int id) throws Exception {
       initialize(name, ip, port, id);
@@ -37,15 +40,19 @@ public class ChatboxInterface extends JFrame implements ActionListener {
       title.setBounds(400, 25, 900, 100);
       title.setFont(titleFont);
       add(title);
-
+/*
       chatHistory = new JTextArea();
       chatHistory.setBounds(50, 100 , 1175, 700);
       chatHistory.setEditable(false);
       chatHistory.setFont(messageFont);
-      chatHistory.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-      add(chatHistory);
+      add(chatHistory);*/
       
-      
+      scroll = new JScrollPane();
+      scroll.setBounds(50, 100, 1175, 700);
+      //scroll.setEditable(false);
+      scroll.setFont(messageFont);
+      add(scroll);
+
       enterMessage = new JTextField();
       enterMessage.setBounds(50, 825, 975, 175);
       enterMessage.setFont(messageFont);
@@ -59,12 +66,11 @@ public class ChatboxInterface extends JFrame implements ActionListener {
       add(sendMessage);
       
       this.getRootPane().setDefaultButton(sendMessage);
-
       setVisible(true); 
 
-      
+      listModel = new DefaultListModel();
       System.out.println("Chat Made");
-            
+           /* 
       this.name = name;
       s         = new Socket(ip, port);
       is  = s.getInputStream();
@@ -74,31 +80,35 @@ public class ChatboxInterface extends JFrame implements ActionListener {
       this.name = name;
 
       out.println("/join " + id);
-      out.flush();
+      out.flush();*/
    }
 
    public void actionPerformed(ActionEvent e) {
       String message = enterMessage.getText();
-      appendMessage(message, true);
-      out.println(name + ": " + message);
-      out.flush();
+      appendMessage(name + ": " + message);
+      /*out.println(name + ": " + message);
+      out.flush();*/
    }
 
    public void run() throws Exception {
       new MessageFinder(s).start();
    }
    
-   public static void appendMessage(String message, boolean addName){
+   public static void appendMessage(String message){
       System.out.println("close");
       System.out.println(message);
       enterMessage.setText("");
-      String messageHistory = chatHistory.getText();
-      if (addName) chatHistory.setText(messageHistory + "\n" + name + ": " +  message + "\n");
-      else chatHistory.setText(messageHistory + "\n" + message);
+      listModel.addElement('\n' + message);
+      messageHistory = new JList<String>(listModel);
+
+      scroll.setViewportView(messageHistory);
+      JScrollBar vertical = scroll.getVerticalScrollBar();
+      vertical.setValue(vertical.getMaximum());
    }
 
    public static void main(String[] args) throws Exception {
-      new ChatboxInterface("test", "qumsieh.net", 34197, 1);
+      ChatboxInterface temp = new ChatboxInterface("test", "qumsieh.net", 34197, 1);
+      temp.run();
    } 
 }
 
@@ -123,7 +133,9 @@ class MessageFinder extends Thread {
       }
       
       while (true) {
-         System.out.println(": Looping Thread...");
+         //System.out.println(": Looping Thread...");         
+         
+         //add(ChatboxInterface.scroll);
          
          try {
             queueMessage();
@@ -137,7 +149,7 @@ class MessageFinder extends Thread {
       if (s.getInputStream().available() != 0) {
          String message = in.next();
          System.out.println("Queueing Message.");
-         ChatboxInterface.appendMessage(message, false);
+         ChatboxInterface.appendMessage(message);
          Thread.sleep(1000);
       }
    }
