@@ -9,7 +9,7 @@ import java.util.*;
 
 import java.io.*;
 
-public class CreateInterface extends JFrame {
+public class CreateInterface extends JFrame implements ActionListener {
 
    private        final Font        font = new Font("Arial", Font.BOLD, 48);
    private static       String ip = "qumsieh.net"; // default
@@ -43,7 +43,7 @@ public class CreateInterface extends JFrame {
       portField = new JTextField("34197");
       portField.setBounds(375, 450, 425, 100);
       portField.setFont(font);
-      portField.setEditable(true);
+      portField.setEditable(false);
       add(portField);
       
       JLabel nameLabel = new JLabel("Username:");
@@ -59,6 +59,7 @@ public class CreateInterface extends JFrame {
       JButton connectButton = new JButton("Create");
       connectButton.setBounds(850, 450, 250, 100); 
       connectButton.setFont(font);
+      connectButton.addActionListener(this);
       add(connectButton);
       
       setVisible(true);
@@ -72,8 +73,8 @@ public class CreateInterface extends JFrame {
    public void actionPerformed(ActionEvent e) {
       try {
          int id = connectIP();
-         new ChatboxInterface(ipField.getText(), Integer.parseInt(portField.getText()), id, nameField.getText());
-         this.dispose();
+         ChatboxInterface temp = new ChatboxInterface(nameField.getText(), ipField.getText(), Integer.parseInt(portField.getText()), id);
+         temp.run();
       } catch (Exception ex) {
          JLabel label = new JLabel("Server Not Found");
          label.setFont(font);
@@ -87,12 +88,13 @@ public class CreateInterface extends JFrame {
       OutputStream outstream = s.getOutputStream();
       Scanner      in = new Scanner(instream);
       PrintWriter  out = new PrintWriter(outstream);
-
       out.println("/gc");
-      Thread.sleep(50);
-      if (instream.available() == 0) throw new Exception();
+      out.flush();
 
+      Thread.sleep(2000);
+      if (instream.available() == 0) throw new Exception();
+      int id = Integer.parseInt(in.next());
       s.close();
-      return in.nextInt();
+      return id;
    }
 }

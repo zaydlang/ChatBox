@@ -24,7 +24,7 @@ public class ConnectInterface extends JFrame implements ActionListener {
    private String[] arg;
    
    public ConnectInterface() {
-      setSize(1300, 700);
+      setSize(1300, 850);
       setLayout(null); 
       arg = new String[1];
       arg[0] = "/gc 1";
@@ -63,7 +63,7 @@ public class ConnectInterface extends JFrame implements ActionListener {
       nameField.setBounds(500, 150, 600, 100);
       nameField.setFont(font);
       add(nameField);
-      
+
       JButton connectButton = new JButton("Connect");
       connectButton.setBounds(800, 450, 300, 100); 
       connectButton.setFont(font);
@@ -76,7 +76,8 @@ public class ConnectInterface extends JFrame implements ActionListener {
    public void actionPerformed(ActionEvent e) {
       try {
          //connectIP();
-         new ChatboxInterface(nameField.getText(), ipField.getText(), 34197, Integer.parseInt(idField.getText()));
+         ChatboxInterface x = new ChatboxInterface(nameField.getText(), ipField.getText(), 34197, Integer.parseInt(idField.getText()));
+         x.run();
          //this.dispose();
       } catch (Exception ex) {
          JLabel label = new JLabel("Server Not Found");

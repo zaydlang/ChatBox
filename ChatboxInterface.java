@@ -79,8 +79,8 @@ public class ChatboxInterface extends JFrame implements ActionListener {
 
    public void actionPerformed(ActionEvent e) {
       String message = enterMessage.getText();
-      appendMessage(message);
-      out.println(message);
+      appendMessage(message, true);
+      out.println(name + ": " + message);
       out.flush();
    }
 
@@ -88,12 +88,13 @@ public class ChatboxInterface extends JFrame implements ActionListener {
       new MessageFinder(s).start();
    }
    
-   public static void appendMessage(String message){
+   public static void appendMessage(String message, boolean addName){
       System.out.println("close");
       System.out.println(message);
       enterMessage.setText("");
       String messageHistory = chatHistory.getText();
-      chatHistory.setText(messageHistory + "\n" + name + ": " +  message + "\n");
+      if (addName) chatHistory.setText(messageHistory + "\n" + name + ": " +  message + "\n");
+      else chatHistory.setText(messageHistory + "\n" + message);
    }
 
    public static void main(String[] args) throws Exception {
@@ -122,7 +123,7 @@ class MessageFinder extends Thread {
       }
       
       while (true) {
-         //if (TestServer.DEBUG_MODE) System.out.println(gID + ": Looping Thread...");
+         System.out.println(": Looping Thread...");
          
          try {
             queueMessage();
@@ -136,7 +137,7 @@ class MessageFinder extends Thread {
       if (s.getInputStream().available() != 0) {
          String message = in.next();
          System.out.println("Queueing Message.");
-         ChatboxInterface.appendMessage(message);
+         ChatboxInterface.appendMessage(message, false);
          Thread.sleep(1000);
       }
    }
