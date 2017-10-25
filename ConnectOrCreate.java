@@ -5,19 +5,16 @@ import javax.swing.*;
 
 public class ConnectOrCreate extends JFrame implements ActionListener {
    
-   private final Font font = new Font("Tahoma", Font.BOLD, 48);
-   private JButton serverButton; // Used for ActionEvent
-   
-   public ConnectOrCreate() {   
-      try { 
-         UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel"); 
-      } catch (Exception e) { e.printStackTrace(); }
-      
-      setSize(1300, 600);
+   private final Font font = new Font("Arial", Font.BOLD, 48);
+   private JButton serverButton;
+   private JButton advancedButton; // Used for ActionEvent
+
+   public ConnectOrCreate() {     
+      setSize(1300, 700);
       setLayout(null); 
       
       JLabel title = new JLabel("Welcome to Odyssey Chat!");
-      title.setBounds(350, 25, 900, 100);
+      title.setBounds(300, 25, 900, 100);
       title.setFont(font);
       add(title);
       
@@ -27,18 +24,24 @@ public class ConnectOrCreate extends JFrame implements ActionListener {
       connectButton.addActionListener(this);
       add(connectButton);
       
-      serverButton = new JButton("Host a Chat Server");
+      serverButton = new JButton("Create a Group Chat");
       serverButton.setBounds(200, 300, 900, 100); 
       serverButton.setFont(font);
       serverButton.addActionListener(this);
       add(serverButton);
+
+      advancedButton = new JButton("ADVANCED: Start Chat Server");
+      advancedButton.setBounds(200, 450, 900, 100); 
+      advancedButton.setFont(font);
+      advancedButton.addActionListener(this);
+      add(advancedButton);
       
       setVisible(true);
    }
    
    public void actionPerformed(ActionEvent e) {
       try {
-         if (e.getSource() == serverButton) new HostInterface();
+         if (e.getSource() == serverButton) new CreateInterface();
          else new ConnectInterface();
          
          this.dispose();

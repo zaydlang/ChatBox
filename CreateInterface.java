@@ -5,32 +5,22 @@ import javax.swing.*;
 
 import java.net.*;
 
+import java.util.*;
+
 import java.io.*;
 
-public class HostInterface extends JFrame {
+public class CreateInterface extends JFrame {
 
    private        final Font        font = new Font("Arial", Font.BOLD, 48);
-   private static final InetAddress ip;
-   
-   // Honestly don't know why this works or how it works but https://stackoverflow.com/questions/1028661/unhandled-exceptions-in-field-initializations
-   static {
-      InetAddress tempIP = null;
-      
-      try {
-         tempIP = InetAddress.getLocalHost();
-      } catch (Exception e) {
-         JOptionPane.showMessageDialog(null, "Error", "No Internet Connection", JOptionPane.ERROR_MESSAGE);
-      } finally {
-         ip = tempIP;
-      }
-   }
-   
-   public HostInterface() throws Exception {
-      setSize(1300, 550);
+   private static       String ip = "qumsieh.net"; // default
+   public JTextField ipField,portField,nameField;
+ 
+   public CreateInterface() throws Exception {
+      setSize(1300, 700);
       setLayout(null); 
       
       JLabel title = new JLabel("Welcome to Odyssey Chat!");
-      title.setBounds(400, 25, 900, 100);
+      title.setBounds(325, 25, 900, 100);
       title.setFont(font);
       add(title);
       
@@ -39,43 +29,51 @@ public class HostInterface extends JFrame {
       ipLabel.setFont(font);
       add(ipLabel);
       
-      JTextField ipField = new JTextField(getIP());
-      ipField.setBounds(275, 300, 500, 100);
+      ipField = new JTextField("qumsieh.net");
+      ipField.setBounds(300, 300, 800, 100);
       ipField.setFont(font);
-      ipField.setEditable(false);
+      ipField.setEditable(true);
       add(ipField);
+
+      JLabel portLabel = new JLabel("Port:");
+      portLabel.setBounds(200, 450, 300, 100);
+      portLabel.setFont(font);
+      add(portLabel);
+      
+      portField = new JTextField("34197");
+      portField.setBounds(375, 450, 425, 100);
+      portField.setFont(font);
+      portField.setEditable(true);
+      add(portField);
       
       JLabel nameLabel = new JLabel("Username:");
       nameLabel.setBounds(200, 150, 500, 100);
       nameLabel.setFont(font);
       add(nameLabel);
       
-      JTextField nameField = new JTextField();
-      nameField.setBounds(475, 150, 625, 100);
+      nameField = new JTextField();
+      nameField.setBounds(525, 150, 575, 100);
       nameField.setFont(font);
       add(nameField);
-      
-      JButton connectButton = new JButton("Connect");
-      connectButton.setBounds(800, 300, 300, 100); 
+
+      JButton connectButton = new JButton("Create");
+      connectButton.setBounds(850, 450, 250, 100); 
       connectButton.setFont(font);
       add(connectButton);
       
       setVisible(true);
    }
    
-   public String getIP() throws Exception {
-      return ip.getHostAddress();
-   }
-   
    // DELETE THIS LATER
    public static void main(String[] args) throws Exception {
-      new HostInterface();
+      new CreateInterface();
    }
    
    public void actionPerformed(ActionEvent e) {
       try {
-         connectIP();
-         //this.dispose();
+         int id = connectIP();
+         new ChatboxInterface(ipField.getText(), Integer.parseInt(portField.getText()), id, nameField.getText());
+         this.dispose();
       } catch (Exception ex) {
          JLabel label = new JLabel("Server Not Found");
          label.setFont(font);
@@ -83,9 +81,18 @@ public class HostInterface extends JFrame {
       }
    }
    
-   public Socket connectIP() throws Exception {
-      Socket succ = new Socket();
-      return succ;
-      //succ.accept();
+   public int connectIP() throws Exception {
+      Socket       s = new Socket(ipField.getText(), Integer.parseInt(portField.getText()));
+      InputStream  instream = s.getInputStream();
+      OutputStream outstream = s.getOutputStream();
+      Scanner      in = new Scanner(instream);
+      PrintWriter  out = new PrintWriter(outstream);
+
+      out.println("/gc");
+      Thread.sleep(50);
+      if (instream.available() == 0) throw new Exception();
+
+      s.close();
+      return in.nextInt();
    }
 }
