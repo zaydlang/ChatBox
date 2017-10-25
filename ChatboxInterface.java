@@ -9,41 +9,30 @@ import java.util.concurrent.*;
 import java.util.*;
 import java.net.*;
 import java.io.*;
-import javax.swing.JComponent.*;
 
 public class ChatboxInterface extends JFrame implements ActionListener {
    private final Font titleFont = new Font("Arial", Font.BOLD, 48);
    private final Font messageFont = new Font("Arial", Font.PLAIN, 35);
    private JLabel title;
-   private JTextArea chatHistory;
-   private JTextField enterMessage;
+   private static JTextArea chatHistory;
+   private static JTextField enterMessage;
    private JButton sendMessage;
    private PrintWriter out;
-   private String name;
+   public static String name;
+   private Socket s;
+   private InputStream is;
+   private OutputStream os;
+   private Scanner in;
 
-   public ChatboxInterface(String ip, int port, String name, String[] args) throws Exception {
-      //setContentPane(new JLabel(new ImageIcon("images\\bckgrnd.jpg")));
-      Thread.sleep(10);
-      Socket       s = new Socket(ip, port);
-      InputStream  instream = s.getInputStream();
-      OutputStream outstream = s.getOutputStream();
-      Scanner      in = new Scanner(instream);
-                   out = new PrintWriter(outstream); 
+   public ChatboxInterface(String name, String ip, int port, int id) throws Exception {
+      initialize(name, ip, port, id);
+   }
 
-      this.name = name;
-     
-      out.println(args[0]);
-      out.flush();
-
+   public void initialize(String name, String ip, int port, int id) throws Exception {
       setSize(1300, 1100);
       setLayout(null);
-      setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+      //setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
       
-      //JLabel test = new JLabel(new ImageIcon("images//bckgrnd.jpg"));
-      //test.setBounds(0, 0, 1300, 1100);
-      //setComponentZOrder(test, 0);
-      //add(test);
-          
       title = new JLabel("Chat with your friends!");
       title.setBounds(400, 25, 900, 100);
       title.setFont(titleFont);
@@ -53,7 +42,7 @@ public class ChatboxInterface extends JFrame implements ActionListener {
       chatHistory.setBounds(50, 100 , 1175, 700);
       chatHistory.setEditable(false);
       chatHistory.setFont(messageFont);
-      chatHistory.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+      chatHistory.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
       add(chatHistory);
       
       
@@ -68,33 +57,38 @@ public class ChatboxInterface extends JFrame implements ActionListener {
       sendMessage.setBounds(1050, 825, 175, 175);
       sendMessage.addActionListener(this);
       add(sendMessage);
-      //chatHistory.setBackground(new Color(0, 0, 0, 100));
-      setVisible(true);
       
       this.getRootPane().setDefaultButton(sendMessage);
-      setLayout(null);
+
+      setVisible(true); 
+
       
-      while (true) {
-         System.out.println(s.getInputStream().available());
-         if (s.getInputStream().available() != 0) {
-             String message = in.next();
-             appendMessage(message);
-         }
-         
-         TimeUnit.SECONDS.sleep(1);
-      }      
+      System.out.println("Chat Made");
+            
+      this.name = name;
+      s         = new Socket(ip, port);
+      is  = s.getInputStream();
+      os = s.getOutputStream();
+      in        = new Scanner(is);
+      out       = new PrintWriter(os); 
+      this.name = name;
+
+      out.println("/join " + id);
+      out.flush();
    }
-   
+
    public void actionPerformed(ActionEvent e) {
       String message = enterMessage.getText();
       appendMessage(message);
       out.println(message);
       out.flush();
    }
+
+   public void run() throws Exception {
+      new MessageFinder(s).start();
+   }
    
-   public void appendMessage(String message) {
-      if (message.equals("")) return;
-      
+   public static void appendMessage(String message){
       System.out.println("close");
       System.out.println(message);
       enterMessage.setText("");
@@ -103,7 +97,48 @@ public class ChatboxInterface extends JFrame implements ActionListener {
    }
 
    public static void main(String[] args) throws Exception {
-      new ChatboxInterface("localhost", 34197, "Test", args);
+      new ChatboxInterface("test", "qumsieh.net", 34197, 1);
+   } 
+}
+
+class MessageFinder extends Thread {
+   private Socket s;
+   private Scanner in;
+   private PrintWriter out;
+
+   public MessageFinder(Socket client) {
+      s = client;
+   }
+   
+   public void run() {
+      in = null;
+      out = null;
+
+      try {
+         in  = new Scanner(s.getInputStream());
+         out = new PrintWriter(s.getOutputStream());
+      } catch (Exception e) {
+         e.printStackTrace();
+      }
+      
+      while (true) {
+         //if (TestServer.DEBUG_MODE) System.out.println(gID + ": Looping Thread...");
+         
+         try {
+            queueMessage();
+         } catch (Exception e) {
+            //e.printStackTrace();
+         }
+      }
+   }
+   
+   public void queueMessage() throws Exception {
+      if (s.getInputStream().available() != 0) {
+         String message = in.next();
+         System.out.println("Queueing Message.");
+         ChatboxInterface.appendMessage(message);
+         Thread.sleep(1000);
+      }
    }
 }
 

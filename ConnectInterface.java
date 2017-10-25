@@ -76,10 +76,7 @@ public class ConnectInterface extends JFrame implements ActionListener {
    public void actionPerformed(ActionEvent e) {
       try {
          //connectIP();
-         new ChatboxInterface(ipField.getText(), 34197, Integer.parseInt(idField.getText()), nameField.getText());
-         this.dispose();
-         System.out.println(s.isClosed());
-         System.out.println(s);
+         new ChatboxInterface(nameField.getText(), ipField.getText(), 34197, Integer.parseInt(idField.getText()));
          //this.dispose();
       } catch (Exception ex) {
          JLabel label = new JLabel("Server Not Found");
