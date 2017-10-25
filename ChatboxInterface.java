@@ -31,7 +31,7 @@ public class ChatboxInterface extends JFrame implements ActionListener {
       initialize(name, ip, port, id);
    }
 
-   public void initialize(String name, String ip, int port, int id) throws Exception {
+   public void initialize(String names, String ip, int port, int id) throws Exception {
       setSize(1300, 1100);
       setLayout(null);
       //setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -77,7 +77,7 @@ public class ChatboxInterface extends JFrame implements ActionListener {
       os = s.getOutputStream();
       in        = new Scanner(is);
       out       = new PrintWriter(os); 
-      this.name = name;
+      this.name = names;
 
       out.println("/join " + id);
       out.flush();
