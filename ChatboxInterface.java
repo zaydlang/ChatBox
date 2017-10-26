@@ -58,7 +58,7 @@ public class ChatboxInterface extends JFrame implements ActionListener {
       enterMessage.setFont(messageFont);
       add(enterMessage);
       
-      ImageIcon sendIcon = new ImageIcon("send.png");
+      ImageIcon sendIcon = new ImageIcon("images//send.png");
       
       sendMessage = new JButton(sendIcon);
       sendMessage.setBounds(1050, 825, 175, 175);
