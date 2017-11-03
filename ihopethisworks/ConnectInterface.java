@@ -21,6 +21,7 @@ public class ConnectInterface extends JFrame implements ActionListener {
    private Scanner      in;
    private PrintWriter  out;
    private Socket       s;
+   private String[] arg;
    
    // Honestly don't know why this works or how it works but https://stackoverflow.com/questions/1028661/unhandled-exceptions-in-field-initializations
    /*static {
@@ -39,9 +40,11 @@ public class ConnectInterface extends JFrame implements ActionListener {
    public ConnectInterface() {
       setSize(1300, 550);
       setLayout(null); 
+      arg = new String[1];
+      arg[0] = "/gc 1";
       
-      JLabel title = new JLabel("Welcome to ChatBox!");
-      title.setBounds(400, 25, 900, 100);
+      JLabel title = new JLabel("Welcome to Odyssey Chat!");
+      title.setBounds(350, 25, 900, 100);
       title.setFont(font);
       add(title);
       
@@ -76,7 +79,9 @@ public class ConnectInterface extends JFrame implements ActionListener {
    
    public void actionPerformed(ActionEvent e) {
       try {
-         connectIP();
+         //connectIP();
+         new ChatboxInterface(ipField.getText(), 34197, nameField.getText(), arg);
+         this.dispose();
          System.out.println(s.isClosed());
          System.out.println(s);
          //this.dispose();
